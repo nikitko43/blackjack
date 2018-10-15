@@ -15,7 +15,7 @@ def play():
     return render_template('play.html', form=MessageForm())
 
 
-@socketio.on('chat_message')
+@socketio.on('message')
 def handle_message(message):
     print('received message: ' + message)
 
