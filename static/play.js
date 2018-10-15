@@ -3,3 +3,6 @@ var socket = io.connect('http://' + document.domain + ':' + location.port);
             socket.emit('my event', {data: 'I\'m connected!'});
         });
 
+function send_message(form) {
+    alert(form);
+}
