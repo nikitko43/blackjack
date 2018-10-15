@@ -1,11 +1,14 @@
-{% block title %}Title{% endblock %}
-
-{% block scripts %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
     <script type = "text/javascript" src = "{{ url_for('static', filename = 'play.js') }}" ></script>
-{% endblock %}
-
-{% block content %}
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.css"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
     <div class="container">
         <form onsubmit="send_message(this); return false;">
             {{ form.username() }}
@@ -13,4 +16,5 @@
             {{ form.submit() }}
         </form>
     </div>
-{% endblock %}
+</body>
+</html>
