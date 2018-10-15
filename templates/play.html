@@ -10,10 +10,10 @@
 </head>
 <body>
     <div class="container">
-        <form onsubmit="send_message(this); return false;">
-            {{ form.username() }}
-            {{ form.message() }}
-            {{ form.submit() }}
+        <form onsubmit="send_message(this); return false;" class="control">
+            {{ form.username(class_="input") }}
+            {{ form.message(class_="textarea") }}
+            {{ form.submit(class_="button") }}
         </form>
     </div>
 </body>
