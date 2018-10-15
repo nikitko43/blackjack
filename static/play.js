@@ -4,5 +4,5 @@ var socket = io.connect('http://' + document.domain + ':' + location.port);
         });
 
 function send_message(form) {
-    alert(form);
+    socket.emit('chat_message', form)
 }
