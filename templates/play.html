@@ -9,12 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+<section class="section">
     <div class="container">
         <form onsubmit="send_message(this); return false;" class="control">
-            {{ form.username(class_="input") }}
-            {{ form.message(class_="textarea") }}
-            {{ form.submit(class_="button") }}
+            <div class="field"><label class="label">Имя</label>{{ form.username(class_="input") }}</div>
+            <div class="field"><label class="label">Сообщение</label>{{ form.message(class_="textarea") }}</div>
+            <div class="field">{{ form.submit(class_="button") }}</div>
         </form>
     </div>
+</section>
 </body>
 </html>
