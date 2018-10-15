@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask_bootstrap import Bootstrap
 from flask_socketio import SocketIO
 
 from forms import MessageForm
@@ -6,6 +7,7 @@ from forms import MessageForm
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
+bootstrap = Bootstrap(app)
 
 
 @app.route('/play/')
