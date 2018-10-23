@@ -51,7 +51,7 @@ $(document).ready(function () {
 
     message_form.on('submit', function (e) {
         e.preventDefault();
-        var str = send_form.serializeObject();
+        var str = message_form.serializeObject();
         socket.emit('chat_message', str);
         message_form.val("");
     });
