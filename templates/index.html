@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %} Index {% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <form id="login_form" method="POST" class="control">
+                {{ form.hidden_tag() }}
+                <div class="field"><label class="label">Имя</label>{{ form.username(class_="input") }}</div>
+                <div class="field">{{ form.submit(class_="button") }}</div>
+            </form>
+        </div>
+    </section>
+{% endblock %}
