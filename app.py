@@ -69,7 +69,7 @@ def index():
 
 @socketio.on('connected')
 def connected(data):
-    if session['username'] not in game.players_list:
+    if game.is_player(session['username']):
         game.add_player(session['username'])
         game.random_diller()
         start_round()

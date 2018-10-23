@@ -30,6 +30,12 @@ class Game():
     def add_player(self, player):
         self.players_list.append(Person(player))
 
+    def is_player(self, name):
+        for person in self.players_list:
+            if person.name == name:
+                return True
+        return False
+
     # Случайно определяет диллера
     def random_diller(self):
         self.diller = random.choice(self.players_list)
