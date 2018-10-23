@@ -53,7 +53,7 @@ $(document).ready(function () {
         e.preventDefault();
         var str = message_form.serializeObject();
         socket.emit('chat_message', str);
-        message_form.val("");
+        $(".input").val("");
     });
 
     socket.on('players_info', function (data) {
@@ -65,6 +65,7 @@ $(document).ready(function () {
     });
 
     socket.on('betting', function (data) {
+        $(".game_buttons").prop('disabled', true);
         if(data === $("#username").text()){
             $(".bet_btn").prop('disabled', false);
         }
