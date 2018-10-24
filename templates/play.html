@@ -23,6 +23,7 @@
                 <div v-if="dealer.cards_images != undefined">
                   <img v-for="card in dealer.cards_images" :src="[['../static/cards/' + card]]" height="102px" width="70px">
                 </div>
+                <p v-if="dealer.score" class="title is-6">Очки: [[ dealer.score ]]</p>
               </div>
             </div>
             <div v-for="player in players">
@@ -39,6 +40,7 @@
                     <img v-for="card in player.cards_images" :src="[['../static/cards/' + card]]" height="102px"
                          width="70px" class="images">
                   </div>
+                  <p v-if="player.score" class="title is-6">Очки: [[ player.score ]]</p>
                 </div>
               </div>
             </div>

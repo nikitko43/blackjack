@@ -33,15 +33,18 @@ class Round():
         if hide_second:
             return {'name': self.diller.name, 'cards': [self.diller.hand[0]['hand_cards'][0], '?'] if show_cards else [],
                     'money': self.diller.money,
+                    'score': None,
                     'cards_images': self.diller.get_hand_card_images(hide_second=True) if show_cards else []}
         else:
             return {'name': self.diller.name, 'cards': self.diller.hand[0]['hand_cards'], 'money': self.diller.money,
+                    'score': self.diller.points_in_hand() if show_cards else None,
                     'cards_images': self.diller.get_hand_card_images() if show_cards else []}
 
     def players_info(self, show_cards=False):
         return [{'name': player.name, 'cards': player.hand if show_cards else [],
                  'money': player.money,
                  'cards_images': player.get_hand_card_images(hide=(not show_cards)),
+                 'score': player.points_in_hand() if show_cards else None,
                  'bet': self.bank.return_value(player)} for player in self.players]
 
     # Игроки делают ставки
