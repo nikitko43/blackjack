@@ -1,3 +1,5 @@
+from time import sleep
+
 from flask import Flask, render_template, session, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_socketio import SocketIO
@@ -91,6 +93,8 @@ def end_round():
     results = game.round.comprasion_points()
     for mes in results:
         send_message(mes)
+    emit_players_info(dealer=True, show_cards=True, hide_second_dealer=False)
+    sleep(5)
     send_message('Конец раунда')
 
 
@@ -125,10 +129,10 @@ def emit_current_betting_player(with_message=True):
                               'previous': game.round.previous_player.name if game.round.previous_player else None})
 
 
-def emit_players_info(dealer=False, show_cards=True):
+def emit_players_info(dealer=False, show_cards=True, hide_second_dealer=True):
     socketio.emit('players_info', game.round.players_info(show_cards=show_cards))
     if dealer:
-        socketio.emit('dealer_info', game.round.diller_info(show_cards=show_cards))
+        socketio.emit('dealer_info', game.round.diller_info(show_cards=show_cards, hide_second=hide_second_dealer))
 
 
 def send_message(str):
