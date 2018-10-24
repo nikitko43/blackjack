@@ -92,7 +92,7 @@ class Round():
 
     # Если игрок проиграл
     def player_lose(self, player, num_hand):
-        self.bank.diller_is_winer(player, num_hand)
+        self.bank.diller_is_winner(player, num_hand)
         return ('{},{}={} > Вы проиграли!'.format(player.name, player.hand[num_hand]['hand_cards'], player.points_in_hand(num_hand)))
 
     # Реализация ничьи
