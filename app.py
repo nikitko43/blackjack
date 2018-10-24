@@ -1,5 +1,4 @@
-from time import sleep
-
+from eventlet import sleep
 from flask import Flask, render_template, session, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_socketio import SocketIO

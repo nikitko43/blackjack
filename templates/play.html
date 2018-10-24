@@ -11,7 +11,6 @@
       <div class="columns">
         <div class="column is-half">
           <h3 id="username" style="display: none">{{ username }}</h3>
-          <br>
           <div id="hands">
             <div class="card">
               <header class="card-header">
@@ -22,9 +21,7 @@
               <div class="card-content">
                 <p class="subtitle is-6">Капитал: [[ dealer.money ]]</p>
                 <div v-if="dealer.cards_images != undefined">
-                  <div v-for="card in dealer.cards_images">
-                    <img :src="[['../static/cards/' + card]]" height="102px" width="70px">
-                  </div>
+                  <img v-for="card in dealer.cards_images" :src="[['../static/cards/' + card]]" height="102px" width="70px">
                 </div>
               </div>
             </div>
