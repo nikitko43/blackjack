@@ -60,7 +60,7 @@ class Bank:
             pass
 
     # Отдаёт деньги диллеру, при проигрыше игрока
-    def diller_is_winer(self, player, num_hand):
+    def diller_is_winner(self, player, num_hand=0):
         try:
             if player in self.bank:
                 self.diller.money += self.bank[player][num_hand]
@@ -71,13 +71,11 @@ class Bank:
 
     # Возвращает значение (сколько было поставлено)
     def return_value(self, player, num_hand=0):
-        try:
-            if player in self.bank:
-                return self.bank[player][num_hand]
-            else:
-                raise Exception('Ошибка, игрок {} не делал ставку'.format(player.name))
-        except Exception as e:
-            pass
+        if player in self.bank:
+            return self.bank[player][num_hand]
+        else:
+            return None
+
 
     # Обновляется каждый раунд
     def refresh_bank(self):

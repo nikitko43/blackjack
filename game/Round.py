@@ -2,7 +2,7 @@ import copy
 
 class Round():
     # Конструктор класса раунд
-    def __init__(self, all_players, diller, bank, deck):
+    def __init__(self, all_players, diller, bank, deck, prev_player=None):
         self.bank = bank
         self.count_player = len(all_players)
         self.all_players = copy.copy(all_players)   #Все игроки
@@ -10,6 +10,7 @@ class Round():
         self.players.remove(diller)
         self.diller = diller
         self.deck = deck
+        self.previous_player = prev_player
         self.current_betting_player = self.players[0]
         self.current_player = self.players[0]
         self.move = None
@@ -18,59 +19,30 @@ class Round():
         return self.current_player.checkup_dubl(self.bank.return_value(self.current_player))
 
     def next_player(self):
+        self.previous_player = self.current_player
         ind = self.players.index(self.current_player) + 1
         self.current_player = self.players[ind] if ind < len(self.players) else None
 
     def next_betting_player(self):
+        self.previous_player = self.current_betting_player
         ind = self.players.index(self.current_betting_player) + 1
         self.current_betting_player = self.players[ind] if ind < len(self.players) else None
 
-    # Ход игрока
-    def players_move(self, set_players = None, split = False):
-        if set_players is None:     # Если не установлено по каким игрокам проходить в раунде
-            players = self.players
-        else:
-            players = [set_players]
-        for player in players:
-            for num_hand in range(len(player.hand)):    # Проходит по всем рукам всех игроков
-                self.diller_cards()
-                while True:
-                    if player.points_in_hand(num_hand) == 21:
-                        break
-                    move_code = player.move(self.bank.return_value(player, num_hand), num_hand = num_hand)
-                    if move_code == 1:
-                        break
-                    elif move_code == 2:
-                        player.get_card(self.deck, num_hand = num_hand)
-                        player.points_in_hand(num_hand)
-                        if player.hand[num_hand]['hand_to_much'] == True:
-                            self.player_lose(player, num_hand)
-                            break
-                    elif move_code == 3:
-                        player.get_card(self.deck, num_hand = num_hand)
-                        self.bank.double_bet(player, num_hand)
-                        player.points_in_hand(num_hand)
-                        if player.hand[num_hand]['hand_to_much'] == True:
-                            self.player_lose(player, num_hand)
-                        break
-                    else:
-                        player.split_cards(self.deck)
-                        self.bank.bet_in_split_bank(player)
-                        self.players_move(player, split = True)
-                        break
-
     # Показать карты диллера
-    def diller_info(self, hide = True, show_cards=False):
-        if hide == True:
+    def diller_info(self, hide_second=True, show_cards=False):
+        if hide_second:
             return {'name': self.diller.name, 'cards': [self.diller.hand[0]['hand_cards'][0], '?'] if show_cards else [],
-                    'money': self.diller.money}
+                    'money': self.diller.money,
+                    'cards_images': self.diller.get_hand_card_images(hide_second=True) if show_cards else []}
         else:
-            return {'name': self.diller.name, 'cards': self.diller.hand[0]['hand_cards'], 'money': self.diller.money}
+            return {'name': self.diller.name, 'cards': self.diller.hand[0]['hand_cards'], 'money': self.diller.money,
+                    'cards_images': self.diller.get_hand_card_images() if show_cards else []}
 
     def players_info(self, show_cards=False):
         return [{'name': player.name, 'cards': player.hand if show_cards else [],
-                 'money': player.money} for player in self.players]
-
+                 'money': player.money,
+                 'cards_images': player.get_hand_card_images(hide=(not show_cards)),
+                 'bet': self.bank.return_value(player)} for player in self.players]
 
     # Игроки делают ставки
     def push_bet(self, bet):

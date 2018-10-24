@@ -45,7 +45,7 @@ $(document).ready(function () {
 
     socket.on('new_message', function (data) {
         var chat = $("#chat_textarea");
-        var text = '\n' + data + chat.val();
+        var text = data + '\n' + chat.val();
         chat.val(text);
     });
 
@@ -53,7 +53,7 @@ $(document).ready(function () {
         e.preventDefault();
         var str = message_form.serializeObject();
         socket.emit('chat_message', str);
-        $(".input").val("");
+        $("#message").val("");
     });
 
     socket.on('players_info', function (data) {
@@ -65,23 +65,35 @@ $(document).ready(function () {
     });
 
     socket.on('betting', function (data) {
+        console.log(data);
         $(".game_buttons").prop('disabled', true);
-        if(data === $("#username").text()){
+        if(data.previous){
+            $("#" + data.previous).removeClass('card_active');
+        }
+        $("#" + data.name).addClass('card_active');
+        if(data.name === $("#username").text()){
             $(".bet_btn").prop('disabled', false);
+            $("html").css('background-color', '#cdffd7');
         }
         else {
             $(".bet_btn").prop('disabled', true);
+            $("html").css('background-color', '#FFFFFF');
         }
     });
 
     socket.on('player', function (data) {
-        console.log(data);
+        if(data.previous){
+            $("#" + data.previous).removeClass('card_active');
+        }
+        $("#" + data.name).addClass('card_active');
         if(data.name === $("#username").text()){
             $(".game_buttons").prop('disabled', false);
             if(!data.can_double) { $("#double").prop('disabled', true) }
+            $("html").css('background-color', '#cdffd7');
         }
         else {
             $(".game_buttons").prop('disabled', true);
+            $("html").css('background-color', '#FFFFFF');
         }
     });
 

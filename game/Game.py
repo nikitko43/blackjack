@@ -16,12 +16,17 @@ class Game():
     def __init__(self):
         self.bank = Bank()
         self.players_list = []
+        self.round = None
         if len(self.players_list) >= 2:
             self.random_diller()
             self.round.refresh()
 
     def set_round(self):
-        self.round = Round(self.players_list, self.diller, self.bank, Deck())
+        if self.round:
+            prev_player = self.round.previous_player
+        else:
+            prev_player = None
+        self.round = Round(self.players_list, self.diller, self.bank, Deck(), prev_player)
         self.round.refresh()
         self.next_diller()
         self.round.indicate_diller_for_bank()

@@ -3,8 +3,6 @@ import random
 
 
 class Deck:
-    basic_deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'V', 'D', 'K', 'T'] * 4
-
     # конструктор, который создаёт колоду
     def __init__(self):
         self.cards = []
@@ -12,7 +10,11 @@ class Deck:
 
     # Метод обновляющие колоду для нового раунда
     def refresh_cards(self):
-        self.cards = copy.copy(self.basic_deck)
+        self.cards = []
+        l = list(range(2, 11)) + ['j', 'a', 'q', 'k']
+        for i in l:
+            for j in ['c', 'd', 'h', 's']:
+                self.cards.append(str(i) + j)
 
     # Возвращает одну случайную карту из колоды
     def get_one_card(self):

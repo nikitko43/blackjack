@@ -1,5 +1,6 @@
 import copy
 
+
 # Значимость карты
 def cost_card(card):
     if isinstance(card, str):
@@ -15,16 +16,26 @@ def cost_card(card):
 class Person:
 
     # Конструктор игрока
-    def __init__(self, name = 'noname', money = 1000):
+    def __init__(self, name='noname', money=1000):
         self.hand = []
         self.add_hand_element()
         # hand = [{ 'hand_cards':[] , 'hand_to_much':False } , ... }
         self.money = money
         self.name = name
 
+    def get_hand_card_images(self, hide=False, hide_second=False):
+        if hide:
+            return []
+        hand_images = []
+        for i in self.hand:
+            hand_images = [card + '.png' for card in i['hand_cards']]
+        if hide_second:
+            hand_images = hand_images[:-1]
+        return hand_images
+
     # Добавить руку в случае сплита.
     def add_hand_element(self):
-        self.hand.append({'hand_cards':[], 'hand_to_much':False})
+        self.hand.append({'hand_cards': [], 'hand_to_much': False})
 
     # Удаляет все карты из руки
     def refresh(self):
@@ -50,7 +61,7 @@ class Person:
             self.hand[0]['hand_to_much'] = True
 
     # Проверка на сплит
-    def checkup_split(self, limit_money, num_hand = 0):
+    def checkup_split(self, limit_money, num_hand=0):
         if len(self.hand[num_hand]['hand_cards']) == 2 and self.money > limit_money:
             if cost_card(self.hand[num_hand]['hand_cards'][0]) == cost_card(self.hand[num_hand]['hand_cards'][1]):
                 return True
@@ -63,26 +74,28 @@ class Person:
         return False
 
     # Раздвоить карты (сплит)
-    def split_cards(self, deck ,num_hand = 0):
+    def split_cards(self, deck, num_hand=0):
         self.add_hand_element()
         self.hand[num_hand + 1]['hand_cards'].append(self.hand[num_hand]['hand_cards'][1])
         self.hand[num_hand]['hand_cards'].pop(1)
-        self.get_card(deck, num_hand = 1)
+        self.get_card(deck, num_hand=1)
         self.get_card(deck)
 
     # Возвращает количество очков в руке
     def points_in_hand(self, num_hand=0):
         points = 0
         count_ace = 0
-        for item in self.hand[num_hand]['hand_cards']:
-            if isinstance(item, str):
-                if item == 'T':
+        for _item in self.hand[num_hand]['hand_cards']:
+            item = _item[:-1]
+            try:
+                item = int(item)
+                points += item
+            except:
+                if item == 'a':
                     points += 11
                     count_ace += 1
                 else:
                     points += 10
-            else:
-                points += item
             while points > 21:
                 if count_ace > 0:
                     points -= 10
@@ -92,19 +105,3 @@ class Person:
             if points > 21:
                 self.hand[num_hand]['hand_to_much'] = 1
         return points
-
-    # Выбор действия (хватит, ещё, удвоить, сплит)
-    def move(self, limit_money, move_code, num_hand = 0):
-        possibility = 2     #По стандарту дано 2 действия (Хватит, Ещё)
-        if self.checkup_dubl(limit_money, num_hand):
-            possibility = 3
-            if self.checkup_split(limit_money, num_hand) and len(self.hand) == 1 :
-                possibility = 4
-        return self.set_move_code(move_code, possibility)
-
-    # Функция, которая устанавливает, что будет делать player
-    def set_move_code(self, move_code, possibility):
-        if 0 < move_code <= possibility:
-            return move_code
-        else:
-            raise ValueError
