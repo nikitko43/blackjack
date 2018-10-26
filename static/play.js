@@ -103,6 +103,11 @@ $(document).ready(function () {
         }
     });
 
+    $("#leave").on('click', function() {
+        socket.emit('leave');
+        window.location.replace("//blackjack.nikitko.ru");
+    });
+
     $("#double").on('click', function () {
         $(".game_buttons").prop('disabled', true);
         socket.emit('double');

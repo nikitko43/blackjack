@@ -79,6 +79,33 @@ def handle_message(json):
     send_message(mes)
 
 
+@socketio.on('leave')
+def player_leave():
+    username = session['username']
+    if username in game.queue:
+        game.queue.remove(username)
+
+    player = None
+    for pl in game.players_list:
+        if pl.name == username:
+            player = pl
+
+    if username in game.players_in_room:
+        game.players_in_room.remove(username)
+
+    if player:
+        game.players_list.remove(player)
+        if game.round.current_betting_player == player:
+            next_betting_player()
+        elif game.round.current_player == player:
+            next_player()
+
+        game.round.players.remove(player)
+        game.round.current_player = game.round.players[0]
+
+    send_message(username + ' покинул игру.')
+
+
 def start_round():
     for player in game.queue:
         game.add_player(player)
@@ -100,9 +127,9 @@ def end_round():
         send_message(mes)
     if len(game.players_list) == 1:
         send_message('Новая игра...')
+        game.players_list = []
         for player in game.players_in_room:
-            if not game.is_player_in_game(player):
-                game.add_player(player)
+            game.add_player(player)
     sleep(5)
 
 
