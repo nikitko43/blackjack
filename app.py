@@ -32,7 +32,9 @@ def index():
 @socketio.on('connected')
 def connected(data):
     username = session['username']
+    emit_players_info(dealer=False, show_cards=False)
     if not game.is_player_in_room(username):
+        send_message(username + ' зашел.')
         game.add_player_to_room(username)
         if not game.is_player_in_game(username) and len(game.players_list) >= 2:
             game.queue.append(username)
