@@ -31,10 +31,12 @@ def index():
 
 @socketio.on('connected')
 def connected(data):
-    if not game.is_player(session['username']):
-        game.add_player(session['username'])
-        game.random_diller()
-        start_round()
+    username = session['username']
+    if not game.is_player_in_room(username):
+        game.add_player_to_room(username)
+        if not game.is_player_in_game(username):
+            game.add_player(session['username'])
+            start_round()
 
 
 @socketio.on('bet')
@@ -49,7 +51,7 @@ def player_bet(bet):
             emit_players_info(dealer=True)
             emit_current_player()
     else:
-        emit_current_betting_player(with_message=False)
+        emit_current_betting_player()
 
 
 @socketio.on('take')
@@ -60,7 +62,7 @@ def player_take():
 @socketio.on('double')
 def player_double():
     game.round.bank.double_bet(game.round.current_player)
-    taking_card()
+    taking_card(with_double=True)
 
 
 @socketio.on('next')
@@ -89,41 +91,53 @@ def start_round():
 def end_round():
     game.round.diller_turn()
     send_message('У дилера ' + game.round.diller.name + ' карты ' + str(game.round.diller.hand[0]['hand_cards']))
+    emit_players_info(dealer=True, show_cards=True, hide_second_dealer=False)
     results = game.round.comprasion_points()
     for mes in results:
         send_message(mes)
-    emit_players_info(dealer=True, show_cards=True, hide_second_dealer=False)
+    messages = game.all_checks()
+    for mes in messages:
+        send_message(mes)
+    if len(game.players_list) == 1:
+        send_message('Новая игра...')
+        for player in game.players_in_room:
+            if not game.is_player_in_game(player):
+                game.add_player(player)
     sleep(5)
-    send_message('Конец раунда')
 
 
-def taking_card():
+def taking_card(with_double=False):
     game.round.current_player.get_card(game.round.deck)
     emit_players_info(dealer=False)
     if game.round.current_player.points_in_hand() > 21:
         send_message(game.round.current_player.name + ' взял карту и перебрал.')
         game.round.bank.diller_is_winner(game.round.current_player)
-        game.round.next_player()
-        if game.round.current_player is not None:
-            emit_current_player()
-        else:
-            end_round()
-            start_round()
+        next_player()
     else:
-        send_message(game.round.current_player.name + ' взял карту.')
+        if with_double:
+            send_message(game.round.current_player.name + ' удвоил и взял карту.')
+            next_player()
+        else:
+            send_message(game.round.current_player.name + ' взял карту.')
         emit_current_player()
 
 
+def next_player():
+    game.round.next_player()
+    if game.round.current_player is not None:
+        emit_current_player()
+    else:
+        end_round()
+        start_round()
+
+
 def emit_current_player():
-    send_message('Ход ' + game.round.current_player.name)
     socketio.emit('player', {'name': game.round.current_player.name,
                              'can_double': game.round.is_current_player_can_double(),
                              'previous': game.round.previous_player.name if game.round.previous_player else None})
 
 
-def emit_current_betting_player(with_message=True):
-    if with_message:
-        send_message(game.round.current_betting_player.name + ', делайте ставку!')
+def emit_current_betting_player():
     socketio.emit('betting', {'name': game.round.current_betting_player.name,
                               'previous': game.round.previous_player.name if game.round.previous_player else None})
 

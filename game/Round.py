@@ -2,7 +2,7 @@ import copy
 
 class Round():
     # Конструктор класса раунд
-    def __init__(self, all_players, diller, bank, deck, prev_player=None):
+    def __init__(self, all_players, diller, bank, deck):
         self.bank = bank
         self.count_player = len(all_players)
         self.all_players = copy.copy(all_players)   #Все игроки
@@ -10,7 +10,7 @@ class Round():
         self.players.remove(diller)
         self.diller = diller
         self.deck = deck
-        self.previous_player = prev_player
+        self.previous_player = None
         self.current_betting_player = self.players[0]
         self.current_player = self.players[0]
         self.move = None
@@ -25,8 +25,11 @@ class Round():
 
     def next_betting_player(self):
         self.previous_player = self.current_betting_player
-        ind = self.players.index(self.current_betting_player) + 1
-        self.current_betting_player = self.players[ind] if ind < len(self.players) else None
+        if self.diller.money == self.bank.return_sum():
+            self.current_betting_player = None
+        else:
+            ind = self.players.index(self.current_betting_player) + 1
+            self.current_betting_player = self.players[ind] if ind < len(self.players) else None
 
     # Показать карты диллера
     def diller_info(self, hide_second=True, show_cards=False):
@@ -53,11 +56,10 @@ class Round():
             bet = int(bet)
         except:
             bet = -1
-        if self.current_betting_player.betting(bet):
+        if bet + self.bank.return_sum() <= self.diller.money and self.current_betting_player.betting(bet):
             self.bank.bet_in_bank(self.current_betting_player, bet)
             return True
         return False
-
 
     # Раздать карты игрокам
     def give_cards_to_players(self):
@@ -118,7 +120,6 @@ class Round():
         self.deck.refresh_cards()
         self.bank.refresh_bank()
 
-
     # Красиво выводит имя игроков, кто ещё не проиграл
     # Использовалось для дебагов
     def list_name_players(self):
@@ -134,29 +135,3 @@ class Round():
                 if player.hand[num_hand]['hand_to_much'] == False:
                     count += 1
         return count
-
-
-
-    # Раунд
-    # def play_round(self):
-    #     self.give_cards_to_players()
-    #     self.players_move()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        #

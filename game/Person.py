@@ -1,22 +1,7 @@
-import copy
-
-
-# Значимость карты
-def cost_card(card):
-    if isinstance(card, str):
-        if card == 'T':
-            cost = 11
-        else:
-            cost = 10
-    else:
-        cost = card
-    return cost
-
-
 class Person:
 
     # Конструктор игрока
-    def __init__(self, name='noname', money=1000):
+    def __init__(self, name='noname', money=100):
         self.hand = []
         self.add_hand_element()
         # hand = [{ 'hand_cards':[] , 'hand_to_much':False } , ... }
@@ -61,11 +46,11 @@ class Person:
             self.hand[0]['hand_to_much'] = True
 
     # Проверка на сплит
-    def checkup_split(self, limit_money, num_hand=0):
-        if len(self.hand[num_hand]['hand_cards']) == 2 and self.money > limit_money:
-            if cost_card(self.hand[num_hand]['hand_cards'][0]) == cost_card(self.hand[num_hand]['hand_cards'][1]):
-                return True
-        return False
+    # def checkup_split(self, limit_money, num_hand=0):
+    #     if len(self.hand[num_hand]['hand_cards']) == 2 and self.money > limit_money:
+    #         if cost_card(self.hand[num_hand]['hand_cards'][0]) == cost_card(self.hand[num_hand]['hand_cards'][1]):
+    #             return True
+    #     return False
 
     # Проверка на удвоение
     def checkup_dubl(self, limit_money, num_hand=0):

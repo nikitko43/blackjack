@@ -65,10 +65,14 @@ $(document).ready(function () {
     });
 
     socket.on('betting', function (data) {
-        console.log(data);
+        $(".game_buttons").addClass("is-hidden");
+        $(".bet_form").removeClass("is-hidden");
         $(".game_buttons").prop('disabled', true);
         if(data.previous){
             $("#" + data.previous).removeClass('card_active');
+        }
+        else{
+            $(".card").removeClass('card_active');
         }
         $("#" + data.name).addClass('card_active');
         if(data.name === $("#username").text()){
@@ -82,6 +86,8 @@ $(document).ready(function () {
     });
 
     socket.on('player', function (data) {
+        $(".game_buttons").removeClass("is-hidden");
+        $(".bet_form").addClass("is-hidden");
         if(data.previous){
             $("#" + data.previous).removeClass('card_active');
         }

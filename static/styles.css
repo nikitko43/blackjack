@@ -1,5 +1,5 @@
 .card_active {
-    margin: 10px 20px;
+    margin: 15px 10px;
     background-color: #FFFFFF;
     box-shadow: 0 2px 4px rgba(200, 10, 10, 0.4), 0 0 0 1px rgba(200, 10, 10, 0.4);
 }
@@ -10,6 +10,10 @@
 
 .textarea {
     height: 200px;
+}
+
+.card {
+    margin: 10px 0;
 }
 
 .subtitle:not(:last-child) {

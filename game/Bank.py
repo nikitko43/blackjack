@@ -69,6 +69,12 @@ class Bank:
         except Exception as e:
             pass
 
+    def return_sum(self):
+        bet_sum = 0
+        for player in self.bank:
+            bet_sum += self.bank[player][0]
+        return bet_sum
+
     # Возвращает значение (сколько было поставлено)
     def return_value(self, player, num_hand=0):
         if player in self.bank:

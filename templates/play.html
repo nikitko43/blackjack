@@ -47,11 +47,11 @@
           </div>
         </div>
         <div class="column">
-          <div class="field"><input id="bet_input" class="input" type="text" size="10"></div>
-          <div class="buttons"><button class="button bet_btn" disabled id="bet">Поставить</button>
-          <button class="button game_buttons" disabled id="take">Взять</button>
-          <button class="button game_buttons" disabled id="next">Оставить</button>
-          <button class="button game_buttons" disabled id="double">Удвоить</button></div>
+          <div class="field"><input id="bet_input" class="input bet_form is-medium" type="text" size="10"></div>
+          <div class="buttons"><button class="button bet_btn bet_form is-medium" disabled id="bet">Поставить</button>
+          <button class="button game_buttons is-medium" disabled id="take">Взять</button>
+          <button class="button game_buttons is-medium" disabled id="next">Оставить</button>
+          <button class="button game_buttons is-medium" disabled id="double">Удвоить</button></div>
           <textarea class="textarea has-fixed-size" id="chat_textarea" readonly></textarea>
           <form id="message_form" class="control">
               <div class="field">{{ form.message(class_="input") }}</div>

@@ -11,35 +11,39 @@ import random
 #
 
 
-class Game():
+class Game:
     # Конструктор для игры
     def __init__(self):
         self.bank = Bank()
+        self.players_in_room = []
         self.players_list = []
         self.round = None
+        self.diller = None
         if len(self.players_list) >= 2:
             self.random_diller()
             self.round.refresh()
 
     def set_round(self):
-        if self.round:
-            prev_player = self.round.previous_player
-        else:
-            prev_player = None
-        self.round = Round(self.players_list, self.diller, self.bank, Deck(), prev_player)
-        self.round.refresh()
         self.next_diller()
+        self.round = Round(self.players_list, self.diller, self.bank, Deck())
+        self.round.refresh()
         self.round.indicate_diller_for_bank()
         self.round.give_cards_to_players()
 
     def add_player(self, player):
         self.players_list.append(Person(player))
 
-    def is_player(self, name):
-        for person in self.players_list:
-            if person.name == name:
+    def add_player_to_room(self, player):
+        self.players_in_room.append(player)
+
+    def is_player_in_game(self, name):
+        for player in self.players_list:
+            if player.name == name:
                 return True
         return False
+
+    def is_player_in_room(self, name):
+        return name in self.players_in_room
 
     # Случайно определяет диллера
     def random_diller(self):
@@ -49,12 +53,14 @@ class Game():
 
     # Назначает следующего диллера
     def next_diller(self):
-        ind = self.players_list.index(self.diller)
-        if ind != len(self.players_list)-1:
-            self.diller = self.players_list[ind+1]
+        if self.diller and self.diller in self.players_list:
+            ind = self.players_list.index(self.diller)
+            if ind != len(self.players_list)-1:
+                self.diller = self.players_list[ind+1]
+            else:
+                self.diller = self.players_list[0]
         else:
-            self.diller = self.players_list[0]
-        # self.show_diller()
+            self.random_diller()
 
     # Выводит имя диллера
     def show_diller(self):
@@ -66,36 +72,27 @@ class Game():
 
     # Убирает человека из игры, если он остался без денег
     def players_no_money(self):
+        messages = []
         for player in self.players_list:
-            if player.money <= 0 and player != self.diller:
+            if player.money <= 0:
                 self.players_list.remove(player)
-                message = str('Игрок {} выбывает из игры'.format(player.name))
+                messages.append(str('Игрок {} выбывает из игры'.format(player.name)))
+        return messages
 
     # Убирает дилера, если он остался без денег
-    def diller_no_money(self):
-        if self.diller.money <= 0:
-            self.players_list.remove(self.diller)
+    # def diller_no_money(self):
+    #     if self.diller.money <= 0:
+    #         self.players_list.remove(self.diller)
 
     # Проверка: остался ли хоть кто-то играть, кроме одного человека
     def left_one_player(self):
         if len(self.players_list) == 1:
             message = str('Остался только {}, игра закончена'.format(self.players_list[0].name))
+            return [message]
+        return []
 
     def all_checks(self):
-        self.players_no_money()
-        self.next_diller()
-        self.diller_no_money()
-        self.left_one_player()
-
-    # Зацикливание раундов
-    # def cycle_rounds_old(self):
-    #     while True:
-    #         round.indicate_diller_for_bank()
-    #         round.push_bets()
-    #         round.give_cards_to_players()
-    #         round.players_move()
-    #         round.diller_turn()
-    #         round.comprasion_points()
-    #         round.refresh_round()
-    #         self.all_checks()
-
+        messages = []
+        messages += self.players_no_money()
+        messages += self.left_one_player()
+        return messages
