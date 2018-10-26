@@ -34,6 +34,13 @@ var hands = new Vue({
     delimiters: ['[[', ']]']
 });
 
+window.addEventListener("beforeunload", function (e) {
+  var confirmationMessage = "\o/";
+  socket.emit('leave');
+
+  (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+  return confirmationMessage;                            //Webkit, Safari, Chrome
+});
 
 $(document).ready(function () {
     var message_form = $("#message_form");

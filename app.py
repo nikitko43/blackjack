@@ -33,7 +33,7 @@ def index():
 def connected(data):
     username = session['username']
     if len(game.players_list) > 1:
-        emit_players_info(dealer=False, show_cards=False)
+        emit_players_info(dealer=True, show_cards=False)
     if not game.is_player_in_room(username):
         send_message(username + ' зашел.')
         game.add_player_to_room(username)
