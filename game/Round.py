@@ -1,6 +1,6 @@
 import copy
 
-class Round():
+class Round:
     # Конструктор класса раунд
     def __init__(self, all_players, diller, bank, deck):
         self.bank = bank
@@ -11,17 +11,25 @@ class Round():
         self.diller = diller
         self.deck = deck
         self.previous_player = None
-        self.current_betting_player = self.players[0]
+        self.current_betting_player = self.players[0] if len(self.players) > 0 else None
         self.current_player = self.players[0]
         self.move = None
 
     def is_current_player_can_double(self):
-        return self.current_player.checkup_dubl(self.bank.return_value(self.current_player))
+        bet = self.bank.return_value(self.current_player)
+        return self.current_player.checkup_dubl(bet) and self.diller.money - self.bank.return_sum() >= bet
 
     def next_player(self):
         self.previous_player = self.current_player
         ind = self.players.index(self.current_player) + 1
         self.current_player = self.players[ind] if ind < len(self.players) else None
+
+    def get_max_bet(self):
+        dealer_max = self.diller.money - self.bank.return_sum()
+        player_max = self.current_betting_player.money
+        if dealer_max > player_max:
+            return player_max
+        return dealer_max
 
     def next_betting_player(self):
         self.previous_player = self.current_betting_player

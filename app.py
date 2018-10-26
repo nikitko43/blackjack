@@ -85,6 +85,8 @@ def handle_message(json):
 @socketio.on('leave')
 def player_leave():
     username = session['username']
+    send_message(username + ' покинул игру.')
+
     if username in game.queue:
         game.queue.remove(username)
 
@@ -105,8 +107,6 @@ def player_leave():
 
         game.round.players.remove(player)
         game.round.current_player = game.round.players[0]
-
-    send_message(username + ' покинул игру.')
 
 
 def start_round():
@@ -178,7 +178,8 @@ def emit_current_player():
 
 def emit_current_betting_player():
     socketio.emit('betting', {'name': game.round.current_betting_player.name,
-                              'previous': game.round.previous_player.name if game.round.previous_player else None})
+                              'previous': game.round.previous_player.name if game.round.previous_player else None,
+                              'max': game.round.get_max_bet()})
 
 
 def emit_players_info(dealer=False, show_cards=True, hide_second_dealer=True):

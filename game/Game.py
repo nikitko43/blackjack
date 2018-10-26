@@ -15,9 +15,9 @@ class Game:
         self.bank = Bank()
         self.players_in_room = []
         self.players_list = []
+        self.queue = []
         self.round = None
         self.round_index = 0
-        self.queue = []
         self.diller = None
         if len(self.players_list) >= 2:
             self.random_diller()

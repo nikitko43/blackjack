@@ -34,17 +34,21 @@ var hands = new Vue({
     delimiters: ['[[', ']]']
 });
 
-window.addEventListener("beforeunload", function (e) {
-  var confirmationMessage = "\o/";
-  socket.emit('leave');
-
-  (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-  return confirmationMessage;                            //Webkit, Safari, Chrome
-});
-
 $(document).ready(function () {
     var message_form = $("#message_form");
     var bet_input = $("#bet_input");
+
+    bet_input.ionRangeSlider({
+        min: 0,
+        max: 100,
+        step: 1,
+        value: 10,
+    });
+
+    $(".irs").addClass('is-hidden');
+
+    var slider = bet_input.data('ionRangeSlider');
+
     var socket = io.connect('http://' + document.domain + ':' + location.port);
         socket.on('connect', function() {
             socket.emit('connected', {data: 'I\'m connected!'});
@@ -54,6 +58,10 @@ $(document).ready(function () {
         var chat = $("#chat_textarea");
         var text = data + '\n' + chat.val();
         chat.val(text);
+    });
+
+    window.addEventListener("beforeunload", function (e) {
+        socket.emit('leave');
     });
 
     message_form.on('submit', function (e) {
@@ -72,9 +80,6 @@ $(document).ready(function () {
     });
 
     socket.on('betting', function (data) {
-        $(".game_buttons").addClass("is-hidden");
-        $(".bet_form").removeClass("is-hidden");
-        $(".game_buttons").prop('disabled', true);
         if(data.previous){
             $("#" + data.previous).removeClass('card_active');
         }
@@ -83,29 +88,31 @@ $(document).ready(function () {
         }
         $("#" + data.name).addClass('card_active');
         if(data.name === $("#username").text()){
-            $(".bet_btn").prop('disabled', false);
-            $("html").css('background-color', '#cdffd7');
+            $(".bet_form").removeClass("is-hidden");
+            $(".irs").removeClass("is-hidden");
+            slider.update({
+                max: data.max,
+            });
+            $("html").css('background-color', '#ffdfda');
         }
         else {
-            $(".bet_btn").prop('disabled', true);
             $("html").css('background-color', '#FFFFFF');
         }
     });
 
     socket.on('player', function (data) {
-        $(".game_buttons").removeClass("is-hidden");
-        $(".bet_form").addClass("is-hidden");
+        console.log(data);
         if(data.previous){
             $("#" + data.previous).removeClass('card_active');
         }
         $("#" + data.name).addClass('card_active');
         if(data.name === $("#username").text()){
-            $(".game_buttons").prop('disabled', false);
+            $(".game_buttons").removeClass("is-hidden");
             if(!data.can_double) { $("#double").prop('disabled', true) }
-            $("html").css('background-color', '#cdffd7');
+            else {$("#double").prop('disabled', false)}
+            $("html").css('background-color', '#ffdfda');
         }
         else {
-            $(".game_buttons").prop('disabled', true);
             $("html").css('background-color', '#FFFFFF');
         }
     });
@@ -116,23 +123,24 @@ $(document).ready(function () {
     });
 
     $("#double").on('click', function () {
-        $(".game_buttons").prop('disabled', true);
+        $(".game_buttons").addClass("is-hidden");
         socket.emit('double');
     });
 
     $('#bet').on('click', function () {
-        $(".bet_btn").prop('disabled', true);
+        $(".bet_form").addClass("is-hidden");
+        $(".irs").addClass("is-hidden");
         socket.emit('bet', bet_input.val());
         bet_input.val("");
     });
 
     $('#take').on('click', function () {
-        $(".game_buttons").prop('disabled', true);
+        $(".game_buttons").addClass("is-hidden");
         socket.emit('take');
     });
 
     $('#next').on('click', function () {
-        $(".game_buttons").prop('disabled', true);
+        $(".game_buttons").addClass("is-hidden");
         socket.emit('next');
     });
 });

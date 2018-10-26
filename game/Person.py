@@ -54,7 +54,7 @@ class Person:
 
     # Проверка на удвоение
     def checkup_dubl(self, limit_money, num_hand=0):
-        if len(self.hand[num_hand]['hand_cards']) == 2 and self.money > limit_money:
+        if len(self.hand[num_hand]['hand_cards']) == 2 and self.money >= limit_money:
             return True
         return False
 

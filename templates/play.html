@@ -3,18 +3,13 @@
 {% block title %} Play {% endblock %}
 {% block scripts %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='slider/css/normalize.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='slider/css/ion.rangeSlider.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='slider/css/ion.rangeSlider.skinFlat.css') }}" />
+    <script src="{{ url_for('static', filename='slider/js/slider.min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
-<nav class="navbar" style="background-color: #FCFCFC;" role="navigation" aria-label="main navigation">
-  <div class="navbar-end">
-    <div class="navbar-item">
-      <a class="button is-light" id="leave">
-        Выйти
-      </a>
-    </div>
-  </div>
-</nav>
   <div class="section">
     <div class="container">
       <div class="columns">
@@ -56,11 +51,14 @@
           </div>
         </div>
         <div class="column">
-          <div class="field"><input id="bet_input" class="input bet_form is-medium" type="text" size="10"></div>
-          <div class="buttons"><button class="button bet_btn bet_form is-medium" disabled id="bet">Поставить</button>
-          <button class="button game_buttons is-medium" disabled id="take">Взять</button>
-          <button class="button game_buttons is-medium" disabled id="next">Оставить</button>
-          <button class="button game_buttons is-medium" disabled id="double">Удвоить</button></div>
+{#          <div class="field"><input id="bet_input" class="input bet_form is-medium" type="text" size="10"></div>#}
+          <div>
+            <input type="text" id="bet_input" value="bet_form" name="range" />
+          </div>
+          <div class="buttons"><button class="button bet_btn bet_form is-hidden" id="bet">Поставить</button>
+          <button class="button game_buttons is-medium is-hidden" id="take">Взять</button>
+          <button class="button game_buttons is-medium is-hidden" id="next">Оставить</button>
+          <button class="button game_buttons is-medium is-hidden" id="double">Удвоить</button></div>
           <textarea class="textarea has-fixed-size" id="chat_textarea" readonly></textarea>
           <form id="message_form" class="control">
               <div class="field">{{ form.message(class_="input") }}</div>
