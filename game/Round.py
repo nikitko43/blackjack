@@ -26,6 +26,9 @@ class Round():
     def next_betting_player(self):
         self.previous_player = self.current_betting_player
         if self.diller.money == self.bank.return_sum():
+            for player in self.players:
+                if player not in self.bank.bank:
+                    self.players.remove(player)
             self.current_betting_player = None
         else:
             ind = self.players.index(self.current_betting_player) + 1

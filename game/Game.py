@@ -9,8 +9,6 @@ import random
 # Игра начинается, создание игроков, начало раунда, ставка игрока, действие игрока, выбрать диллера, поменять диллера
 # Удалить игрока, Добавить игрока, Добавить деньги игроку, Удалить деньги у игрока,
 #
-
-
 class Game:
     # Конструктор для игры
     def __init__(self):
@@ -18,12 +16,15 @@ class Game:
         self.players_in_room = []
         self.players_list = []
         self.round = None
+        self.round_index = 0
+        self.queue = []
         self.diller = None
         if len(self.players_list) >= 2:
             self.random_diller()
             self.round.refresh()
 
     def set_round(self):
+        self.round_index += 1
         self.next_diller()
         self.round = Round(self.players_list, self.diller, self.bank, Deck())
         self.round.refresh()

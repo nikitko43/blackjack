@@ -34,8 +34,10 @@ def connected(data):
     username = session['username']
     if not game.is_player_in_room(username):
         game.add_player_to_room(username)
-        if not game.is_player_in_game(username):
-            game.add_player(session['username'])
+        if not game.is_player_in_game(username) and len(game.players_list) >= 2:
+            game.queue.append(username)
+        elif not game.is_player_in_game(username):
+            game.add_player(username)
             start_round()
 
 
@@ -44,12 +46,7 @@ def player_bet(bet):
     if game.round.push_bet(bet):
         emit_players_info(show_cards=False)
         send_message(game.round.current_betting_player.name + ' сделал ставку ' + str(bet))
-        game.round.next_betting_player()
-        if game.round.current_betting_player is not None:
-            emit_current_betting_player()
-        else:
-            emit_players_info(dealer=True)
-            emit_current_player()
+        next_betting_player()
     else:
         emit_current_betting_player()
 
@@ -83,6 +80,9 @@ def handle_message(json):
 
 
 def start_round():
+    for player in game.queue:
+        game.add_player(player)
+    game.queue = []
     game.set_round()
     emit_players_info(dealer=True, show_cards=False)
     emit_current_betting_player()
@@ -129,6 +129,15 @@ def next_player():
     else:
         end_round()
         start_round()
+
+
+def next_betting_player():
+    game.round.next_betting_player()
+    if game.round.current_betting_player is not None:
+        emit_current_betting_player()
+    else:
+        emit_players_info(dealer=True)
+        emit_current_player()
 
 
 def emit_current_player():
