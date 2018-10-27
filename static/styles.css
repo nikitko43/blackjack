@@ -8,6 +8,21 @@
     white-space: nowrap;
 }
 
+.is-divider {
+    display: block;
+    position: relative;
+    border-top: .1rem solid #dbdbdb;
+    height: .1rem;
+    margin: 0.5rem 0 0.7rem;
+    text-align: center;
+}
+
+.money_imgs {
+    vertical-align: middle;
+    height: 20px;
+    width: 20px;
+}
+
 #bet {
     margin-top: 10px;
 }

@@ -77,10 +77,10 @@ def player_split():
     if game.round.deck.refilled():
         send_message('Колода была перемешана.')
     emit_current_player()
+    emit_players_info(dealer=False)
     if game.round.current_player.is_two_aces_after_split():
         game.round.current_player_num_hand = 1
         next_player()
-    emit_players_info(dealer=False)
 
 
 @socketio.on('chat_message')

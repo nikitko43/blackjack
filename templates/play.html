@@ -24,7 +24,7 @@
                 </p>
               </header>
               <div class="card-content">
-                <p class="subtitle is-6">Капитал: [[ dealer.money ]]</p>
+                <p class="subtitle is-6"><img src="../static/money.png" class="money_imgs"> [[ dealer.money ]]</p>
                 <div v-if="dealer.cards_images != undefined">
                   <img v-for="card in dealer.cards_images" :src="[['../static/cards/' + card]]" height="102px" width="70px">
                 </div>
@@ -40,8 +40,10 @@
                   </p>
                 </header>
                 <div class="card-content">
-                  <p class="subtitle is-6">Капитал: [[ player.money ]]</p>
-                  <p v-if="player.bet" class="subtitle is-6">Ставка: [[ player.bet ]]</p>
+
+                  <p class="subtitle is-6"><img src="../static/money.png" class="money_imgs">[[ player.money ]]</p>
+                  <p v-if="player.bet" class="subtitle is-6"><img src="../static/coins.png" class="money_imgs"> [[ player.bet ]]</p>
+
                   <div v-if="player.cards_images != undefined">
                     <div v-if="player.is_splitted">
                       <img v-for="card in player.cards_images[0]" :src="[['../static/cards/' + card]]" height="102px"

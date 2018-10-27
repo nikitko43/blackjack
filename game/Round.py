@@ -114,13 +114,19 @@ class Round:
             for player in self.players:
                 for num_hand in range(len(player.hand)):
                     if not player.hand[num_hand]['hand_to_much']:
-                        results.append(self.result_win(player, num_hand))
+                        if player.is_blackjack():
+                            results.append(self.result_win(player, num_hand, coef=1.5))
+                        else:
+                            results.append(self.result_win(player, num_hand))
         else:
             for player in self.players:
                 for num_hand in range(len(player.hand)):
-                    if player.hand[num_hand]['hand_to_much'] == False:
+                    if not player.hand[num_hand]['hand_to_much']:
                         if player.points_in_hand(num_hand) > self.diller.points_in_hand():
-                            results.append(self.result_win(player, num_hand))
+                            if player.is_blackjack():
+                                results.append(self.result_win(player, num_hand, coef=1.5))
+                            else:
+                                results.append(self.result_win(player, num_hand))
                         elif player.points_in_hand(num_hand) < self.diller.points_in_hand():
                             results.append(self.player_lose(player, num_hand))
                         else:
@@ -132,8 +138,8 @@ class Round:
         self.bank.indicate_diller(self.diller)
 
     # Реализация выигрыша
-    def result_win(self, player, num_hand):
-        self.bank.rewarding(player, num_hand)
+    def result_win(self, player, num_hand, coef=1.):
+        self.bank.rewarding(player, num_hand, coef=coef)
         return ('{},{}={} > Вы выиграли!'.format(player.name, player.hand[num_hand]['hand_cards'], player.points_in_hand(num_hand)))
 
     # Если игрок проиграл

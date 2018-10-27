@@ -70,6 +70,11 @@ class Person:
             return True
         return False
 
+    def is_blackjack(self):
+        if len(self.hand) == 1 and self.points_in_hand() == 21 and len(self.hand[0]) == 2:
+            return True
+        return False
+
     # Раздвоить карты (сплит)
     def split_cards(self, deck, num_hand=0):
         self.add_hand_element()
@@ -77,7 +82,7 @@ class Person:
         self.hand[num_hand]['hand_cards'].pop(1)
         self.get_card(deck, num_hand=1)
         self.get_card(deck)
-        
+
     def is_two_aces_after_split(self):
         return self.hand[0]['hand_cards'][0][:-1] == 'a' and self.hand[1]['hand_cards'][0][:-1] == 'a'
 

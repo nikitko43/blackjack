@@ -101,7 +101,7 @@ $(document).ready(function () {
             slider.update({
                 max: data.max,
             });
-            $("html").css('background-color', '#ffb44e');
+            $("html").css('background-color', '#ffd59d');
         }
         else {
             $("html").css('background-color', '#FFFFFF');
@@ -123,7 +123,7 @@ $(document).ready(function () {
             if(!data.can_split) { $("#split").prop('disabled', true) }
             else { $("#split").prop('disabled', false) }
 
-            $("html").css('background-color', '#ffb44e');
+            $("html").css('background-color', '#ffd59d');
         }
         else {
             $(".game_buttons").addClass("is-hidden");
