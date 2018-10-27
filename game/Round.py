@@ -21,7 +21,7 @@ class Round:
 
     def is_current_player_can_double(self):
         bet = self.bank.return_value(self.current_player)
-        diller = self.diller.money - self.bank.return_sum() >= bet
+        diller = (self.diller.money - self.bank.return_sum()) >= bet
         return self.current_player.checkup_dubl(bet) and diller and not self.current_player.is_splitted() \
                and not self.current_player.is_doubled
 
@@ -63,7 +63,7 @@ class Round:
 
     def is_current_player_can_split(self):
         bet = self.bank.return_value(self.current_player)
-        diller = self.diller.money - self.bank.return_sum() >= bet
+        diller = (self.diller.money - self.bank.return_sum()) >= bet
         return self.current_player.checkup_split(bet) and diller and not self.current_player.is_doubled \
                and not self.is_current_player_splitted()
 
