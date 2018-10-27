@@ -12,6 +12,10 @@
     margin-top: 10px;
 }
 
+#tabs {
+    margin-bottom: 0;
+}
+
 .textarea {
     height: 200px;
 }

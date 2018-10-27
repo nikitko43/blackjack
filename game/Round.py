@@ -69,9 +69,6 @@ class Round:
         self.current_player.split_cards(self.deck)
         self.current_player_num_hand = 0
         self.bank.bet_in_split_bank(self.current_player)
-        if self.current_player.is_two_aces_after_split():
-            self.current_player_num_hand = 1
-            self.next_player()
 
     # Показать карты диллера
     def diller_info(self, hide_second=True, show_cards=False):

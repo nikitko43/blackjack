@@ -73,7 +73,22 @@
           <button class="button game_buttons is-hidden" id="next">Оставить</button>
           <button class="button game_buttons is-hidden" id="double">Удвоить</button>
           <button class="button game_buttons is-hidden" id="split">Сплит</button></div>
+          <div class="tabs is-boxed" id="tabs">
+            <ul>
+              <li class="chat_tab tab is-active">
+                <a id="chat_tab_button">
+                  <span>Чат</span>
+                </a>
+              </li>
+              <li class="game_tab tab">
+                <a id="game_tab_button">
+                  <span>Ход игры</span>
+                </a>
+              </li>
+            </ul>
+          </div>
           <textarea class="textarea has-fixed-size" id="chat_textarea" readonly></textarea>
+          <textarea class="textarea has-fixed-size is-hidden" id="game_textarea" readonly></textarea>
           <form id="message_form" class="control">
               <div class="field">{{ form.message(class_="input") }}</div>
               <div class="field">{{ form.submit(class_="button") }}</div>

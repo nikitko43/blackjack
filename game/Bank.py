@@ -82,7 +82,6 @@ class Bank:
         else:
             return None
 
-
     # Обновляется каждый раунд
     def refresh_bank(self):
         self.bank.clear()

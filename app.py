@@ -35,7 +35,7 @@ def connected(data):
     if len(game.players_list) > 1:
         emit_players_info(dealer=True, show_cards=False)
     if not game.is_player_in_room(username):
-        send_message(username + ' зашел.')
+        send_message(username + ' зашел.', chat=True)
         game.add_player_to_room(username)
         if not game.is_player_in_game(username) and len(game.players_list) >= 2:
             game.queue.append(username)
@@ -77,19 +77,22 @@ def player_split():
     if game.round.deck.refilled():
         send_message('Колода была перемешана.')
     emit_current_player()
+    if game.round.current_player.is_two_aces_after_split():
+        game.round.current_player_num_hand = 1
+        next_player()
     emit_players_info(dealer=False)
 
 
 @socketio.on('chat_message')
 def handle_message(json):
     mes = session['username'] + ' сказал: ' + json['message']
-    send_message(mes)
+    send_message(mes, chat=True)
 
 
 @socketio.on('leave')
 def player_leave():
     username = session['username']
-    send_message(username + ' покинул игру.')
+    send_message(username + ' покинул игру.', chat=True)
     kick_player(username)
 
 
@@ -224,8 +227,8 @@ def emit_players_info(dealer=False, show_cards=True, hide_second_dealer=True):
         socketio.emit('dealer_info', game.round.diller_info(show_cards=show_cards, hide_second=hide_second_dealer))
 
 
-def send_message(str):
-    socketio.emit('new_message', str)
+def send_message(str, chat=False):
+    socketio.emit('new_message', {'message': str, 'chat': chat})
 
 
 if __name__ == '__main__':

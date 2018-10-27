@@ -55,9 +55,17 @@ $(document).ready(function () {
         });
 
     socket.on('new_message', function (data) {
-        var chat = $("#chat_textarea");
-        var text = data + '\n' + chat.val();
-        chat.val(text);
+        if (data.chat){
+            var chat = $("#chat_textarea");
+            var text = data.message + '\n' + chat.val();
+            chat.val(text);
+        }
+        else {
+            var game_ta = $("#game_textarea");
+            var text = data.message + '\n' + game_ta.val();
+            game_ta.val(text);
+        }
+
     });
 
     window.addEventListener("beforeunload", function (e) {
@@ -151,5 +159,19 @@ $(document).ready(function () {
     $('#next').on('click', function () {
         $(".game_buttons").addClass("is-hidden");
         socket.emit('next');
+    });
+
+    $('#chat_tab_button').on('click', function () {
+        $(".tab").removeClass('is-active');
+        $(".chat_tab").addClass('is-active');
+        $("#game_textarea").addClass('is-hidden');
+        $("#chat_textarea").removeClass('is-hidden');
+    });
+
+    $('#game_tab_button').on('click', function () {
+        $(".tab").removeClass('is-active');
+        $(".game_tab").addClass('is-active');
+        $("#chat_textarea").addClass('is-hidden');
+        $("#game_textarea").removeClass('is-hidden');
     });
 });
