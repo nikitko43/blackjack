@@ -72,7 +72,7 @@ class Bank:
     def return_sum(self):
         bet_sum = 0
         for player in self.bank:
-            bet_sum += self.bank[player][0]
+            bet_sum += sum(self.bank[player])
         return bet_sum
 
     # Возвращает значение (сколько было поставлено)

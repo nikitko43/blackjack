@@ -16,6 +16,7 @@
         <div class="column is-half">
           <h3 id="username" style="display: none">{{ username }}</h3>
           <div id="hands">
+
             <div class="card">
               <header class="card-header">
                 <p class="card-header-title is-centered">
@@ -30,6 +31,7 @@
                 <p v-if="dealer.score" class="title is-6">Очки: [[ dealer.score ]]</p>
               </div>
             </div>
+
             <div v-for="player in players">
               <div class="card" :id="player.name">
                 <header class="card-header">
@@ -41,13 +43,24 @@
                   <p class="subtitle is-6">Капитал: [[ player.money ]]</p>
                   <p v-if="player.bet" class="subtitle is-6">Ставка: [[ player.bet ]]</p>
                   <div v-if="player.cards_images != undefined">
-                    <img v-for="card in player.cards_images" :src="[['../static/cards/' + card]]" height="102px"
+                    <div v-if="player.is_splitted">
+                      <img v-for="card in player.cards_images[0]" :src="[['../static/cards/' + card]]" height="102px"
+                       width="70px" class="images">
+                      <div class="is-divider"></div>
+                      <img v-for="card in player.cards_images[1]" :src="[['../static/cards/' + card]]" height="102px"
+                       width="70px" class="images">
+                    </div>
+                    <div v-if="!player.is_splitted">
+                      <img v-for="card in player.cards_images" :src="[['../static/cards/' + card]]" height="102px"
                          width="70px" class="images">
+                    </div>
                   </div>
-                  <p v-if="player.score" class="title is-6">Очки: [[ player.score ]]</p>
+                  <p v-if="player.score && !player.second_score" class="title is-6">Очки: [[ player.score ]]</p>
+                  <p v-if="player.second_score" class="title is-6">Очки: [[ player.score ]], [[ player.second_score ]]</p>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
         <div class="column">
@@ -58,7 +71,8 @@
           <div class="buttons"><button class="button bet_btn bet_form is-hidden" id="bet">Поставить</button>
           <button class="button game_buttons is-medium is-hidden" id="take">Взять</button>
           <button class="button game_buttons is-medium is-hidden" id="next">Оставить</button>
-          <button class="button game_buttons is-medium is-hidden" id="double">Удвоить</button></div>
+          <button class="button game_buttons is-medium is-hidden" id="double">Удвоить</button>
+          <button class="button game_buttons is-medium is-hidden" id="split">Сплит</button></div>
           <textarea class="textarea has-fixed-size" id="chat_textarea" readonly></textarea>
           <form id="message_form" class="control">
               <div class="field">{{ form.message(class_="input") }}</div>

@@ -1,10 +1,10 @@
-import copy
 import random
 
 
 class Deck:
     # конструктор, который создаёт колоду
-    def __init__(self):
+    def __init__(self, decks=8):
+        self.decks = decks
         self.cards = []
         self.refresh_cards()
 
@@ -15,6 +15,8 @@ class Deck:
         for i in l:
             for j in ['c', 'd', 'h', 's']:
                 self.cards.append(str(i) + j)
+
+        self.cards = self.cards[:] * self.decks
 
     # Возвращает одну случайную карту из колоды
     def get_one_card(self):

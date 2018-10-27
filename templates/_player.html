@@ -1,0 +1,14 @@
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title is-centered">
+      [[ player.name ]]
+    </p>
+  </header>
+  <div class="card-content">
+    <p class="subtitle is-6">Капитал: [[ player.money ]]</p>
+    <div v-if="player.cards_images != undefined">
+      <img v-for="card in player.cards_images" :src="[['../static/cards/' + card]]" height="102px" width="70px">
+    </div>
+    <p v-if="play.score" class="title is-6">Очки: [[ player.score ]]</p>
+  </div>
+</div>

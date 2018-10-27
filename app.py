@@ -67,13 +67,17 @@ def player_double():
 
 @socketio.on('next')
 def player_next():
-    send_message(game.round.current_player.name + ' закончил свой ход.')
-    game.round.next_player()
-    if game.round.current_player is not None:
-        emit_current_player()
-    else:
-        end_round()
-        start_round()
+    next_player()
+
+
+@socketio.on('split')
+def player_split():
+    game.round.split_current_player()
+    send_message(game.round.current_player.name + ' сделал сплит.')
+    if game.round.refill_deck_if_empty():
+        send_message('Колода была перемешана.')
+    emit_current_player()
+    emit_players_info(dealer=False)
 
 
 @socketio.on('chat_message')
@@ -86,7 +90,48 @@ def handle_message(json):
 def player_leave():
     username = session['username']
     send_message(username + ' покинул игру.')
+    kick_player(username)
 
+
+def start_round():
+    for player in game.queue:
+        game.add_player(player)
+    game.queue = []
+    game.set_round()
+    if game.round.refill_deck_if_empty():
+        send_message('Колода была перемешана.')
+    emit_players_info(dealer=True, show_cards=False)
+    emit_current_betting_player()
+
+
+def end_round():
+    if game.round.count_to_much() > 0:
+        emit_players_info(dealer=True, show_cards=True, hide_second_dealer=False)
+        sleep(2)
+        for _ in game.round.diller.diller_logic(game.round.deck):
+            emit_players_info(dealer=True, show_cards=True, hide_second_dealer=False)
+            sleep(2)
+
+    send_message('У дилера ' + game.round.diller.name + ' карты ' + str(game.round.diller.hand[0]['hand_cards']))
+    emit_players_info(dealer=True, show_cards=True, hide_second_dealer=False)
+
+    results = game.round.comprasion_points()
+    for mes in results:
+        send_message(mes)
+
+    messages = game.all_checks()
+    for mes in messages:
+        send_message(mes)
+
+    if len(game.players_list) == 1 and len(game.players_in_room) != 1:
+        send_message('Новая игра...')
+        game.players_list = []
+        for player in game.players_in_room:
+            game.add_player(player)
+    sleep(3)
+
+
+def kick_player(username):
     if username in game.queue:
         game.queue.remove(username)
 
@@ -99,49 +144,36 @@ def player_leave():
         game.players_in_room.remove(username)
 
     if player:
-        game.players_list.remove(player)
+        if player in game.players_list:
+            game.players_list.remove(player)
+
         if game.round.current_betting_player == player:
             next_betting_player()
+            game.round.current_player = game.round.players[0]
+
         elif game.round.current_player == player:
             next_player()
 
-        game.round.players.remove(player)
-        game.round.current_player = game.round.players[0]
-
-
-def start_round():
-    for player in game.queue:
-        game.add_player(player)
-    game.queue = []
-    game.set_round()
-    emit_players_info(dealer=True, show_cards=False)
-    emit_current_betting_player()
-
-
-def end_round():
-    game.round.diller_turn()
-    send_message('У дилера ' + game.round.diller.name + ' карты ' + str(game.round.diller.hand[0]['hand_cards']))
-    emit_players_info(dealer=True, show_cards=True, hide_second_dealer=False)
-    results = game.round.comprasion_points()
-    for mes in results:
-        send_message(mes)
-    messages = game.all_checks()
-    for mes in messages:
-        send_message(mes)
-    if len(game.players_list) == 1:
-        send_message('Новая игра...')
-        game.players_list = []
-        for player in game.players_in_room:
-            game.add_player(player)
-    sleep(5)
+        if player in game.round.players:
+            game.round.players.remove(player)
 
 
 def taking_card(with_double=False):
-    game.round.current_player.get_card(game.round.deck)
+    game.round.current_player.is_doubled = with_double
+    if game.round.current_player_num_hand == 1:
+        take_card_for_hand(1, with_double)
+    else:
+        take_card_for_hand(0, with_double)
+
+
+def take_card_for_hand(num_hand, with_double):
+    game.round.current_player.get_card(game.round.deck, num_hand=num_hand)
+    if game.round.refill_deck_if_empty():
+        send_message('Колода была перемешана.')
     emit_players_info(dealer=False)
-    if game.round.current_player.points_in_hand() > 21:
+    if game.round.current_player.points_in_hand(num_hand=num_hand) > 21:
         send_message(game.round.current_player.name + ' взял карту и перебрал.')
-        game.round.bank.diller_is_winner(game.round.current_player)
+        game.round.bank.diller_is_winner(game.round.current_player, num_hand=num_hand)
         next_player()
     else:
         if with_double:
@@ -157,6 +189,8 @@ def next_player():
     if game.round.current_player is not None:
         emit_current_player()
     else:
+        socketio.emit('player', {'name': '___________________________________________',
+                                 'previous': game.round.previous_player.name if game.round.previous_player else None})
         end_round()
         start_round()
 
@@ -173,6 +207,8 @@ def next_betting_player():
 def emit_current_player():
     socketio.emit('player', {'name': game.round.current_player.name,
                              'can_double': game.round.is_current_player_can_double(),
+                             'can_split': game.round.is_current_player_can_split(),
+                             'is_splitted': game.round.is_current_player_splitted(),
                              'previous': game.round.previous_player.name if game.round.previous_player else None})
 
 

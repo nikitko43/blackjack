@@ -26,7 +26,11 @@ class Game:
     def set_round(self):
         self.round_index += 1
         self.next_diller()
-        self.round = Round(self.players_list, self.diller, self.bank, Deck())
+        if not self.round:
+            deck = Deck()
+        else:
+            deck = self.round.deck
+        self.round = Round(self.players_list, self.diller, self.bank, deck)
         self.round.refresh()
         self.round.indicate_diller_for_bank()
         self.round.give_cards_to_players()

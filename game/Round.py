@@ -1,5 +1,8 @@
 import copy
 
+from game.Deck import Deck
+
+
 class Round:
     # Конструктор класса раунд
     def __init__(self, all_players, diller, bank, deck):
@@ -13,16 +16,29 @@ class Round:
         self.previous_player = None
         self.current_betting_player = self.players[0] if len(self.players) > 0 else None
         self.current_player = self.players[0]
+        self.current_player_num_hand = None
         self.move = None
 
     def is_current_player_can_double(self):
         bet = self.bank.return_value(self.current_player)
-        return self.current_player.checkup_dubl(bet) and self.diller.money - self.bank.return_sum() >= bet
+        diller = self.diller.money - self.bank.return_sum() >= bet
+        return self.current_player.checkup_dubl(bet) and diller and not self.current_player.is_splitted() \
+               and not self.current_player.is_doubled
 
     def next_player(self):
-        self.previous_player = self.current_player
-        ind = self.players.index(self.current_player) + 1
-        self.current_player = self.players[ind] if ind < len(self.players) else None
+        if self.current_player_num_hand == 0:
+            self.current_player_num_hand = 1
+        else:
+            self.previous_player = self.current_player
+            ind = self.players.index(self.current_player) + 1
+            if ind < len(self.players):
+                self.current_player = self.players[ind]
+                if self.current_player.is_splitted():
+                    self.current_player_num_hand = 0
+                else:
+                    self.current_player_num_hand = None
+            else:
+                self.current_player = None
 
     def get_max_bet(self):
         dealer_max = self.diller.money - self.bank.return_sum()
@@ -42,6 +58,23 @@ class Round:
             ind = self.players.index(self.current_betting_player) + 1
             self.current_betting_player = self.players[ind] if ind < len(self.players) else None
 
+    def is_current_player_splitted(self):
+        return self.current_player.is_splitted()
+
+    def is_current_player_can_split(self):
+        bet = self.bank.return_value(self.current_player)
+        diller = self.diller.money - self.bank.return_sum() >= bet
+        return self.current_player.checkup_split(bet) and diller and not self.current_player.is_doubled \
+               and not self.is_current_player_splitted()
+
+    def split_current_player(self):
+        self.current_player.split_cards(self.deck)
+        self.current_player_num_hand = 0
+        self.bank.bet_in_split_bank(self.current_player)
+        if self.current_player.is_two_aces_after_split():
+            self.current_player_num_hand = 1
+            self.next_player()
+
     # Показать карты диллера
     def diller_info(self, hide_second=True, show_cards=False):
         if hide_second:
@@ -56,10 +89,17 @@ class Round:
 
     def players_info(self, show_cards=False):
         return [{'name': player.name, 'cards': player.hand if show_cards else [],
-                 'money': player.money,
+                 'money': player.money, 'is_splitted': player.is_splitted(),
                  'cards_images': player.get_hand_card_images(hide=(not show_cards)),
                  'score': player.points_in_hand() if show_cards else None,
+                 'second_score': player.points_in_hand(1) if player.is_splitted() else None,
                  'bet': self.bank.return_value(player)} for player in self.players]
+
+    def refill_deck_if_empty(self):
+        if len(self.deck.cards) < 20:
+            self.deck = Deck()
+            return True
+        return False
 
     # Игроки делают ставки
     def push_bet(self, bet):
@@ -115,11 +155,6 @@ class Round:
     def result_draw(self,player, num_hand):
         self.bank.return_money(player, num_hand)
         return ('{},{}={} > Ничья!'.format(player.name, player.hand[num_hand]['hand_cards'], player.points_in_hand(num_hand)))
-
-    # Ход диллера
-    def diller_turn(self):
-        if self.count_to_much() > 0:
-            self.diller.diller_logic(self.deck)
 
     # Обновление карт, to_much
     def refresh(self):

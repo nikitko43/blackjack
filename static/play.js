@@ -39,7 +39,7 @@ $(document).ready(function () {
     var bet_input = $("#bet_input");
 
     bet_input.ionRangeSlider({
-        min: 0,
+        min: 1,
         max: 100,
         step: 1,
         value: 10,
@@ -93,7 +93,7 @@ $(document).ready(function () {
             slider.update({
                 max: data.max,
             });
-            $("html").css('background-color', '#ffdfda');
+            $("html").css('background-color', '#ffb44e');
         }
         else {
             $("html").css('background-color', '#FFFFFF');
@@ -108,11 +108,17 @@ $(document).ready(function () {
         $("#" + data.name).addClass('card_active');
         if(data.name === $("#username").text()){
             $(".game_buttons").removeClass("is-hidden");
+
             if(!data.can_double) { $("#double").prop('disabled', true) }
             else {$("#double").prop('disabled', false)}
-            $("html").css('background-color', '#ffdfda');
+
+            if(!data.can_split) { $("#split").prop('disabled', true) }
+            else { $("#split").prop('disabled', false) }
+
+            $("html").css('background-color', '#ffb44e');
         }
         else {
+            $(".game_buttons").addClass("is-hidden");
             $("html").css('background-color', '#FFFFFF');
         }
     });
@@ -135,8 +141,11 @@ $(document).ready(function () {
     });
 
     $('#take').on('click', function () {
-        $(".game_buttons").addClass("is-hidden");
         socket.emit('take');
+    });
+
+    $('#split').on('click', function () {
+        socket.emit('split');
     });
 
     $('#next').on('click', function () {
