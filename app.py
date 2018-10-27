@@ -74,7 +74,7 @@ def player_next():
 def player_split():
     game.round.split_current_player()
     send_message(game.round.current_player.name + ' сделал сплит.')
-    if game.round.refill_deck_if_empty():
+    if game.round.deck.refilled():
         send_message('Колода была перемешана.')
     emit_current_player()
     emit_players_info(dealer=False)
@@ -98,7 +98,7 @@ def start_round():
         game.add_player(player)
     game.queue = []
     game.set_round()
-    if game.round.refill_deck_if_empty():
+    if game.round.deck.refilled():
         send_message('Колода была перемешана.')
     emit_players_info(dealer=True, show_cards=False)
     emit_current_betting_player()
@@ -168,7 +168,7 @@ def taking_card(with_double=False):
 
 def take_card_for_hand(num_hand, with_double):
     game.round.current_player.get_card(game.round.deck, num_hand=num_hand)
-    if game.round.refill_deck_if_empty():
+    if game.round.deck.refilled():
         send_message('Колода была перемешана.')
     emit_players_info(dealer=False)
     if game.round.current_player.points_in_hand(num_hand=num_hand) > 21:
@@ -189,7 +189,7 @@ def next_player():
     if game.round.current_player is not None:
         emit_current_player()
     else:
-        socketio.emit('player', {'name': '___________________________________________',
+        socketio.emit('player', {'name': '_________________________________________________________________________',
                                  'previous': game.round.previous_player.name if game.round.previous_player else None})
         end_round()
         start_round()

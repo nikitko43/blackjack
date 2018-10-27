@@ -1,7 +1,5 @@
 import copy
 
-from game.Deck import Deck
-
 
 class Round:
     # Конструктор класса раунд
@@ -95,12 +93,6 @@ class Round:
                  'second_score': player.points_in_hand(1) if player.is_splitted() else None,
                  'bet': self.bank.return_value(player)} for player in self.players]
 
-    def refill_deck_if_empty(self):
-        if len(self.deck.cards) < 20:
-            self.deck = Deck()
-            return True
-        return False
-
     # Игроки делают ставки
     def push_bet(self, bet):
         try:
@@ -115,7 +107,8 @@ class Round:
     # Раздать карты игрокам
     def give_cards_to_players(self):
         for player in self.all_players:
-            player.get_card(self.deck, count=2)
+            player.get_card(self.deck)
+            player.get_card(self.deck)
 
     # Сравнивает очки
     def comprasion_points(self):
@@ -163,7 +156,6 @@ class Round:
             player.refresh()
             player.add_hand_element()
         self.players.remove(self.diller)
-        self.deck.refresh_cards()
         self.bank.refresh_bank()
 
     # Красиво выводит имя игроков, кто ещё не проиграл
