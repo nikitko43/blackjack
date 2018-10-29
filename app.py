@@ -51,13 +51,16 @@ def disconnect():
 
 
 @socketio.on('bet')
-def player_bet(bet):
-    if game.round.push_bet(bet):
-        emit_players_info(show_cards=False)
-        send_message(game.round.current_betting_player.name + ' сделал ставку ' + str(bet))
-        next_betting_player()
-    else:
-        emit_current_betting_player()
+def player_bet(bet, username):
+    player = game.get_player_by_name(username)
+    if player:
+        if game.round.push_bet(bet, player):
+            emit_players_info(show_cards=False)
+            send_message(player.name + ' сделал ставку ' + str(bet))
+    print(game.round.bank.is_all_players_betted(game.round.players))
+    if game.round.bank.is_all_players_betted(game.round.players):
+        emit_players_info(dealer=True)
+        emit_current_player()
 
 
 @socketio.on('take')
@@ -93,13 +96,6 @@ def player_split():
 def handle_message(json):
     mes = session['username'] + ' сказал: ' + json['message']
     send_message(mes, chat=True)
-
-
-# @socketio.on('leave')
-# def player_leave():
-#     username = session['username']
-#     send_message(username + ' покинул игру.', chat=True)
-#     kick_player(username)
 
 
 @socketio.on('check_connected')
@@ -161,11 +157,7 @@ def kick_player(username):
         if player in game.players_list:
             game.players_list.remove(player)
 
-        if game.round.current_betting_player == player:
-            next_betting_player()
-            game.round.current_player = game.round.players[0]
-
-        elif game.round.current_player == player:
+        if game.round.current_player == player:
             next_player()
 
         if player in game.round.players:
@@ -229,7 +221,6 @@ def check_connected_players():
             send_message(player + ' покинул игру.', chat=True)
 
 
-
 def emit_current_player():
     socketio.emit('player', {'name': game.round.current_player.name,
                              'can_double': game.round.is_current_player_can_double(),
@@ -239,9 +230,12 @@ def emit_current_player():
 
 
 def emit_current_betting_player():
-    socketio.emit('betting', {'name': game.round.current_betting_player.name,
-                              'previous': game.round.previous_player.name if game.round.previous_player else None,
-                              'max': game.round.get_max_bet()})
+    print('че за хуйня')
+    socketio.emit('betting', {player.name: game.round.get_max_bet(player) for player in game.round.players})
+
+    # socketio.emit('betting', {'name': game.round.current_betting_player.name,
+    #                           'previous': game.round.previous_player.name if game.round.previous_player else None,
+    #                           'max': game.round.get_max_bet()})
 
 
 def emit_players_info(dealer=False, show_cards=True, hide_second_dealer=True):

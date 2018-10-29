@@ -35,6 +35,11 @@ class Game:
         self.round.indicate_diller_for_bank()
         self.round.give_cards_to_players()
 
+    def get_player_by_name(self, username):
+        for player in self.players_list:
+            if username == player.name:
+                return player
+
     def add_player(self, player):
         self.players_list.append(Person(player))
 

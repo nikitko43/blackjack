@@ -92,23 +92,14 @@ $(document).ready(function () {
     });
 
     socket.on('betting', function (data) {
-        if(data.previous){
-            $("#" + data.previous).removeClass('card_active');
-        }
-        else{
-            $(".card").removeClass('card_active');
-        }
-        $("#" + data.name).addClass('card_active');
-        if(data.name === $("#username").text()){
+        var name = $("#username").text();
+        if (data.hasOwnProperty(name)){
             $(".bet_form").removeClass("is-hidden");
             $(".irs").removeClass("is-hidden");
             slider.update({
-                max: data.max,
+                max: data[name],
             });
             $("html").css('background-color', '#ffd59d');
-        }
-        else {
-            $("html").css('background-color', '#FFFFFF');
         }
     });
 
@@ -148,7 +139,8 @@ $(document).ready(function () {
     $('#bet').on('click', function () {
         $(".bet_form").addClass("is-hidden");
         $(".irs").addClass("is-hidden");
-        socket.emit('bet', bet_input.val());
+        $("html").css('background-color', '#FFFFFF');
+        socket.emit('bet', bet_input.val(), $("#username").text());
         bet_input.val("");
     });
 

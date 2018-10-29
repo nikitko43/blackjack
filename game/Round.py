@@ -38,9 +38,9 @@ class Round:
             else:
                 self.current_player = None
 
-    def get_max_bet(self):
+    def get_max_bet(self, player):
         dealer_max = self.diller.money - self.bank.return_sum()
-        player_max = self.current_betting_player.money
+        player_max = player.money
         if dealer_max > player_max:
             return player_max
         return dealer_max
@@ -91,13 +91,13 @@ class Round:
                  'bet': self.bank.return_value(player)} for player in self.players]
 
     # Игроки делают ставки
-    def push_bet(self, bet):
+    def push_bet(self, bet, player):
         try:
             bet = int(bet)
         except:
             bet = -1
-        if bet + self.bank.return_sum() <= self.diller.money and self.current_betting_player.betting(bet):
-            self.bank.bet_in_bank(self.current_betting_player, bet)
+        if bet + self.bank.return_sum() <= self.diller.money and player.betting(bet):
+            self.bank.bet_in_bank(player, bet)
             return True
         return False
 

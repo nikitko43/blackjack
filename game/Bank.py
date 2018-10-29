@@ -8,6 +8,12 @@ class Bank:
     def indicate_diller(self, diller):
         self.diller = diller
 
+    def is_all_players_betted(self, players):
+        for player in players:
+            if player not in self.bank:
+                return False
+        return True
+
     # Ставка сделана и сохранена в словаре
     def bet_in_bank(self, player, value, num_hand=0):
         if num_hand == 0:
