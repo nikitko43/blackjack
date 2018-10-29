@@ -13,6 +13,7 @@ socketio = SocketIO(app)
 bootstrap = Bootstrap(app)
 
 game = Game()
+connected_players = []
 
 
 @app.route('/play/')
@@ -42,6 +43,11 @@ def connected(data):
         elif not game.is_player_in_game(username):
             game.add_player(username)
             start_round()
+
+
+@socketio.on('disconnect')
+def disconnect():
+    check_connected_players()
 
 
 @socketio.on('bet')
@@ -89,11 +95,16 @@ def handle_message(json):
     send_message(mes, chat=True)
 
 
-@socketio.on('leave')
-def player_leave():
-    username = session['username']
-    send_message(username + ' покинул игру.', chat=True)
-    kick_player(username)
+# @socketio.on('leave')
+# def player_leave():
+#     username = session['username']
+#     send_message(username + ' покинул игру.', chat=True)
+#     kick_player(username)
+
+
+@socketio.on('check_connected')
+def check_connected(username):
+    connected_players.append(username)
 
 
 def start_round():
@@ -205,6 +216,18 @@ def next_betting_player():
     else:
         emit_players_info(dealer=True)
         emit_current_player()
+
+
+def check_connected_players():
+    global connected_players
+    connected_players = []
+    socketio.emit('check_connection')
+    sleep(5)
+    for player in game.players_in_room:
+        if player not in connected_players:
+            kick_player(player)
+            send_message(player + ' покинул игру.', chat=True)
+
 
 
 def emit_current_player():

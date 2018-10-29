@@ -54,6 +54,10 @@ $(document).ready(function () {
             socket.emit('connected', {data: 'I\'m connected!'});
         });
 
+    socket.on('check_connection', function() {
+        socket.emit('check_connected', $("#username").text());
+    });
+
     socket.on('new_message', function (data) {
         if (data.chat){
             var chat = $("#chat_textarea");
@@ -68,9 +72,9 @@ $(document).ready(function () {
 
     });
 
-    window.addEventListener("beforeunload", function (e) {
-        socket.emit('leave');
-    });
+    // window.addEventListener("beforeunload", function (e) {
+    //     socket.emit('leave');
+    // });
 
     message_form.on('submit', function (e) {
         e.preventDefault();
