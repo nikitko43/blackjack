@@ -34,7 +34,10 @@ def index():
 def connected(data):
     username = session['username']
     if len(game.players_list) > 1:
-        emit_players_info(dealer=True, show_cards=False)
+        if game.round.bank.is_all_players_betted():
+            emit_players_info(dealer=True, show_cards=True)
+        else:
+            emit_players_info(dealer=True, show_cards=False)
     if not game.is_player_in_room(username):
         send_message(username + ' зашел.', chat=True)
         game.add_player_to_room(username)
@@ -57,7 +60,7 @@ def player_bet(bet, username):
         if game.round.push_bet(bet, player):
             emit_players_info(show_cards=False)
             send_message(player.name + ' сделал ставку ' + str(bet))
-    print(game.round.bank.is_all_players_betted(game.round.players))
+
     if game.round.bank.is_all_players_betted(game.round.players):
         emit_players_info(dealer=True)
         emit_current_player()
@@ -230,7 +233,6 @@ def emit_current_player():
 
 
 def emit_current_betting_player():
-    print('че за хуйня')
     socketio.emit('betting', {player.name: game.round.get_max_bet(player) for player in game.round.players})
 
     # socketio.emit('betting', {'name': game.round.current_betting_player.name,
