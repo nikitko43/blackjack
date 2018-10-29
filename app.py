@@ -34,7 +34,7 @@ def index():
 def connected(data):
     username = session['username']
     if len(game.players_list) > 1:
-        if game.round.bank.is_all_players_betted():
+        if game.round.bank.is_all_players_betted(game.round.players):
             emit_players_info(dealer=True, show_cards=True)
         else:
             emit_players_info(dealer=True, show_cards=False)
