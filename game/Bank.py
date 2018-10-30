@@ -47,13 +47,14 @@ class Bank:
     # Возвращает деньги при выигрыше
     def rewarding(self, player, num_hand, coef=1.):
         try:
+            reward = round(self.bank[player][num_hand] * 2 * coef)
             if player in self.bank:
-                if self.diller.money < round(self.bank[player][num_hand] * 2 * coef):
+                if self.diller.money <= reward:
                     player.money += self.diller.money
                     self.diller.money = 0
                 else:
-                    player.money += round(2 * coef * self.bank[player][num_hand])
-                    self.diller.money -= round(self.bank[player][num_hand] * coef)
+                    player.money += reward
+                    self.diller.money -= reward
             else:
                 raise Exception('Ошибка, игрок {} не делал ставку'.format(player.name))
         except Exception as e:
