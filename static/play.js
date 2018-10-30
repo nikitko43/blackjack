@@ -93,7 +93,7 @@ $(document).ready(function () {
 
     socket.on('betting', function (data) {
         var name = $("#username").text();
-        if (data.hasOwnProperty(name)){
+        if (name in data){
             $(".bet_form").removeClass("is-hidden");
             $(".irs").removeClass("is-hidden");
             slider.update({
